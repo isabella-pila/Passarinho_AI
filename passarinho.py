@@ -36,7 +36,7 @@ N_MFCC = 13
 SR = 22050
 
 # Parâmetros SOM
-SOM_X, SOM_Y = 7, 7          # tamanho da grade (49 neurônios)
+SOM_X, SOM_Y = 5, 5          # tamanho da grade (64 neurônios)
 SOM_EPOCAS = 10000            # épocas de treinamento
 SIGMA_INICIAL = 3.5           # raio de vizinhança inicial
 SIGMA_FINAL = 0.5             # raio de vizinhança final
