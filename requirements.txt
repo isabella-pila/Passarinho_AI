@@ -1,6 +1,0 @@
-django
-gunicorn
-whitenoise
-librosa
-numpy
-matplotlib
