@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cantos da Mata — Identificador de Aves</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -25,23 +26,18 @@
 
         body {
             font-family: 'DM Sans', sans-serif;
-            background: linear-gradient(160deg, #0a2718 0%, #144d30 35%, #1d6b42 65%, #0e3d22 100%);
-            color: var(--bark);
+            background: linear-gradient(rgba(27, 67, 50, 0.85), rgba(45, 106, 79, 0.85)), 
+                        url("{% static 'dia-da-mata-atlantica.jpg' %}"); 
+            background-size: cover;          
+            background-position: center;     
+            background-attachment: fixed;    
+            color: var(--sage);
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* ── CANVAS DE FOLHAS (tela toda) ── */
-        #folhas-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* tudo acima do canvas */
+        /* tudo acima do fundo */
         .header, .hero, .especies, .upload-section,
         .resultado-section, .erro-box, .footer, .divisor {
             position: relative;
@@ -123,49 +119,145 @@
             line-height: 1.7;
         }
 
-        /* ── ESPÉCIES ── */
-        .especies {
-            display: flex;
-            justify-content: center;
-            gap: 1.25rem;
-            padding: 0.5rem 2rem 2.25rem;
-            flex-wrap: wrap;
-        }
-        .especie-card {
-            text-align: center;
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(116,184,147,0.2);
-            border-radius: var(--card-radius);
-            padding: 1.1rem 1.4rem;
-            min-width: 108px;
-            transition: all 0.25s;
-            cursor: default;
-        }
-        .especie-card:hover {
-            background: rgba(255,255,255,0.13);
-            border-color: rgba(116,184,147,0.45);
-            transform: translateY(-4px);
-        }
-        .especie-icon {
-            width: 60px; height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            display: block;
-            margin: 0 auto 0.65rem;
-            border: 2.5px solid rgba(255,255,255,0.15);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-        }
-        .especie-nome {
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: #e8f5ed;
-            margin-bottom: 2px;
-        }
-        .especie-cientifico {
-            font-size: 0.72rem;
-            color: rgba(208,234,216,0.5);
-            font-style: italic;
-        }
+        /* ── ESPÉCIES (AJUSTADO PARA FOTOS MAIORES) ── */
+/* ── ESPÉCIES ── */
+.especies {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 0.5rem 2rem 2.25rem;
+    flex-wrap: wrap;
+}
+
+.especie-card {
+    text-align: center;
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(116,184,147,0.18);
+    border-radius: 20px;
+    padding: 1.75rem 1.25rem 1.4rem;
+    min-width: 160px;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(.22,.8,.4,1);
+}
+
+.especie-card::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 130%;
+    height: 120%;
+    background: radial-gradient(ellipse, rgba(116,184,147,0.12) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.35s;
+    pointer-events: none;
+}
+
+.especie-card:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(116,184,147,0.5);
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.45), 0 0 0 1px rgba(116,184,147,0.2);
+}
+
+.especie-card:hover::before { opacity: 1; }
+
+/* ── ANEL DA FOTO ── */
+.especie-img-ring {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 1.1rem;
+}
+
+.especie-img-ring::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: conic-gradient(
+        rgba(116,184,147,0.9) 0deg,
+        rgba(200,131,58,0.7) 120deg,
+        rgba(26,92,56,0.5) 240deg,
+        rgba(116,184,147,0.9) 360deg
+    );
+    animation: spinRing 6s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.especie-card:hover .especie-img-ring::before { opacity: 1; }
+
+@keyframes spinRing {
+    to { transform: rotate(360deg); }
+}
+
+.especie-img-ring::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2.5px solid rgba(116,184,147,0.3);
+    transition: border-color 0.3s;
+}
+
+.especie-card:hover .especie-img-ring::after { border-color: transparent; }
+
+.especie-icon {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    border: 3px solid rgba(255,255,255,0.18);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.08);
+    position: relative;
+    z-index: 1;
+    transition: transform 0.35s cubic-bezier(.22,.8,.4,1), box-shadow 0.3s;
+}
+
+.especie-card:hover .especie-icon {
+    transform: scale(1.05);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+}
+
+/* ── TAG DE FAMÍLIA ── */
+.especie-tag {
+    display: inline-block;
+    background: rgba(116,184,147,0.12);
+    border: 1px solid rgba(116,184,147,0.22);
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 0.62rem;
+    color: var(--sage);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+}
+
+.especie-nome {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #e8f5ed;
+    margin-bottom: 0.2rem;
+    transition: color 0.2s;
+}
+
+.especie-card:hover .especie-nome { color: #fff; }
+
+.especie-cientifico {
+    font-size: 0.74rem;
+    color: rgba(208,234,216,0.5);
+    font-style: italic;
+}
+
+@media (max-width: 600px) {
+    .especie-img-ring { width: 90px; height: 90px; }
+    .especie-icon { width: 90px; height: 90px; }
+}
 
         /* ── DIVISOR ── */
         .divisor {
@@ -293,29 +385,32 @@
         }
 
         /* ── LOADING ── */
-        .loading { display: none; text-align: center; padding: 2.5rem 2rem; }
-        .loading.active { display: block; }
-        .loading-bird {
-            font-size: 2.2rem;
-            display: block;
-            animation: bounce 0.55s infinite alternate;
-        }
-        @keyframes bounce { to { transform: translateY(-10px); } }
-        .loading-text {
-            margin-top: 0.75rem;
-            color: rgba(208,234,216,0.75);
-            font-size: 0.9rem;
-        }
-        .loading-dots::after {
-            content: '';
-            animation: dots 1.5s steps(4, end) infinite;
-        }
-        @keyframes dots {
-            0%  { content: ''; }
-            25% { content: '.'; }
-            50% { content: '..'; }
-            75% { content: '...'; }
-        }
+
+                .loading { display: none; text-align: center; padding: 2.5rem 2rem; }
+                .loading.active { display: block; }
+
+                .loading-lottie {
+                    width: 140px;
+                    height: 140px;
+                    margin: 0 auto;
+                    display: block;
+                }
+
+                .loading-text {
+                    margin-top: 0.75rem;
+                    color: rgba(208,234,216,0.75);
+                    font-size: 0.9rem;
+                }
+                .loading-dots::after {
+                    content: '';
+                    animation: dots 1.5s steps(4, end) infinite;
+                }
+                @keyframes dots {
+                    0%  { content: ''; }
+                    25% { content: '.'; }
+                    50% { content: '..'; }
+                    75% { content: '...'; }
+                }
 
         /* ── RESULTADO ── */
         .resultado-section {
@@ -379,40 +474,7 @@
             border-bottom: 1px solid #eee8dc;
         }
 
-        /* ── CONFIANÇA ── */
-        .confianca-titulo {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #b0a898;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 1rem;
-        }
-        .confianca-item { margin-bottom: 0.9rem; }
-        .confianca-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.83rem;
-            margin-bottom: 0.35rem;
-            font-weight: 500;
-            color: var(--earth);
-        }
-        .confianca-pct { color: var(--leaf); font-weight: 600; }
-        .confianca-bar-bg {
-            height: 7px;
-            background: #f0ece4;
-            border-radius: 99px;
-            overflow: hidden;
-        }
-        .confianca-bar {
-            height: 100%;
-            border-radius: 99px;
-            transition: width 0.9s cubic-bezier(.22,.8,.4,1);
-        }
-        .confianca-item:nth-child(2) .confianca-bar { background: linear-gradient(90deg,#c4614a,#e0836d); }
-        .confianca-item:nth-child(3) .confianca-bar { background: linear-gradient(90deg,#c8833a,#e0a558); }
-        .confianca-item:nth-child(4) .confianca-bar { background: linear-gradient(90deg,#1a5c38,#3a9c68); }
-
+     
         /* ── DETALHES ── */
         .detalhes {
             margin-top: 1.5rem;
@@ -491,52 +553,54 @@
             .hero h1 { font-size: 2.1rem; }
             .hero p   { font-size: 0.9rem; }
             .especies { gap: 0.85rem; }
+            .especie-icon { width: 90px; height: 90px; } /* Ajuste de tamanho para telas muito pequenas */
             .resultado-nome { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Canvas folhas caindo na tela toda -->
-    <canvas id="folhas-canvas"></canvas>
-
-    <!-- Header -->
     <div class="header">
         <div class="header-dot"></div>
         <span class="header-text">Cantos da Mata</span>
     </div>
 
-    <!-- Hero -->
     <div class="hero">
-        <div class="hero-badge">
-            <span class="badge-dot"></span>
-            Bioacústica · Mata Atlântica
-        </div>
+       
         <h1>Qual ave está <em>cantando?</em></h1>
         <p>Envie uma gravação de canto e nosso mapa auto-organizável de Kohonen identifica a espécie da Mata Atlântica.</p>
     </div>
 
-    <!-- Espécies -->
     <div class="especies">
-        <div class="especie-card">
-            <img class="especie-icon" src="{% static 'Araponga.jpg' %}" alt="Araponga">
-            <div class="especie-nome">Araponga</div>
-            <div class="especie-cientifico">P. nudicollis</div>
-        </div>
-        <div class="especie-card">
-            <img class="especie-icon" src="{% static 'BemTeVi.jpg' %}" alt="Bem-te-vi">
-            <div class="especie-nome">Bem-te-vi</div>
-            <div class="especie-cientifico">P. sulphuratus</div>
-        </div>
-        <div class="especie-card">
-            <img class="especie-icon" src="{% static 'Urutau.jpg' %}" alt="Urutau">
-            <div class="especie-nome">Urutau</div>
-            <div class="especie-cientifico">N. griseus</div>
-        </div>
+<div class="especie-card">
+    <div class="especie-img-ring">
+        <img class="especie-icon" src="{% static 'Araponga.jpg' %}" alt="Araponga">
+    </div>
+    <div class="especie-tag">Cotingidae</div>
+    <div class="especie-nome">Araponga</div>
+    <div class="especie-cientifico">P. nudicollis</div>
+</div>
+
+<div class="especie-card">
+    <div class="especie-img-ring">
+        <img class="especie-icon" src="{% static 'BemTeVi.jpg' %}" alt="Bem-te-vi">
+    </div>
+    <div class="especie-tag">Tyrannidae</div>
+    <div class="especie-nome">Bem-te-vi</div>
+    <div class="especie-cientifico">P. sulphuratus</div>
+</div>
+
+<div class="especie-card">
+    <div class="especie-img-ring">
+        <img class="especie-icon" src="{% static 'Urutau.jpg' %}" alt="Urutau">
+    </div>
+    <div class="especie-tag">Nyctibiidae</div>
+    <div class="especie-nome">Urutau</div>
+    <div class="especie-cientifico">N. griseus</div>
+</div>
     </div>
 
     {% if not resultado %}
-    <!-- Upload -->
     <div class="upload-section" id="uploadSection">
         <div class="divisor">
             <div class="divisor-line"></div>
@@ -561,10 +625,10 @@
             </button>
         </form>
 
-        <div class="loading" id="loading">
-            <span class="loading-bird">🐦</span>
-            <div class="loading-text">Analisando o canto<span class="loading-dots"></span></div>
-        </div>
+<div class="loading" id="loading">
+    <div class="loading-lottie" id="lottieContainer"></div>
+    <div class="loading-text">Analisando o canto<span class="loading-dots"></span></div>
+</div>
     </div>
     {% endif %}
 
@@ -575,7 +639,6 @@
     {% endif %}
 
     {% if resultado %}
-    <!-- Resultado -->
     <div class="resultado-section">
         <div class="resultado-card">
             <div class="resultado-header">
@@ -588,18 +651,8 @@
                     {{ resultado.descricao }}
                 </div>
 
-                <div class="confianca-titulo">Confiança da identificação</div>
-                {% for candidato in resultado.candidatos %}
-                <div class="confianca-item">
-                    <div class="confianca-label">
-                        <span>{{ candidato.nome }}</span>
-                        <span class="confianca-pct">{{ candidato.pct }}%</span>
-                    </div>
-                    <div class="confianca-bar-bg">
-                        <div class="confianca-bar" style="width: {{ candidato.pct }}%"></div>
-                    </div>
-                </div>
-                {% endfor %}
+              
+    
 
                 <div class="detalhes">
                     <div class="detalhe-item">
@@ -622,81 +675,21 @@
     </div>
     {% endif %}
 
-    <!-- Footer -->
     <div class="footer">
         Cantos da Mata — Bioacústica com Mapa Auto-Organizável de Kohonen<br>
         Dados: <a href="https://xeno-canto.org" target="_blank">Xeno-canto</a> · Espécies da Mata Atlântica
     </div>
 
     <script>
-    /* ── FOLHAS CANVAS (tela toda, loop suave) ── */
-    (function() {
-        const canvas = document.getElementById('folhas-canvas');
-        const ctx = canvas.getContext('2d');
-        const EMOJIS = ['🍃', '🌿', '🍃', '🍃', '☘️', '🌿', '🍃'];
-        const NUM = 22;
 
-        function resize() {
-            canvas.width  = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resize();
-        window.addEventListener('resize', resize);
 
-        function rand(a, b) { return a + Math.random() * (b - a); }
-
-        const leaves = Array.from({ length: NUM }, () => ({
-            emoji:    EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
-            x:        rand(0, window.innerWidth),
-            y:        rand(-200, window.innerHeight),   // espalha no início
-            size:     rand(13, 26),
-            speed:    rand(0.6, 1.6),
-            drift:    rand(-0.4, 0.4),
-            rot:      rand(0, Math.PI * 2),
-            rotSpeed: rand(-0.012, 0.012),
-            alpha:    rand(0.35, 0.7),
-            swayAmp:  rand(12, 32),
-            swayFreq: rand(0.008, 0.02),
-            swayOff:  rand(0, Math.PI * 2),
-            t:        0,
-        }));
-
-        function step(leaf) {
-            leaf.t     += 1;
-            leaf.y     += leaf.speed;
-            leaf.x     += leaf.drift + Math.sin(leaf.t * leaf.swayFreq + leaf.swayOff) * 0.35;
-            leaf.rot   += leaf.rotSpeed;
-            const w = canvas.width, h = canvas.height;
-            if (leaf.y > h + 40) {
-                leaf.y     = -40;
-                leaf.x     = rand(0, w);
-                leaf.alpha = rand(0.35, 0.7);
-                leaf.size  = rand(13, 26);
-                leaf.speed = rand(0.6, 1.6);
-            }
-            if (leaf.x < -40)  leaf.x = w + 20;
-            if (leaf.x > w+40) leaf.x = -20;
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (const l of leaves) {
-                ctx.save();
-                ctx.globalAlpha = l.alpha;
-                ctx.translate(l.x, l.y);
-                ctx.rotate(l.rot);
-                ctx.font = `${l.size}px serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(l.emoji, 0, 0);
-                ctx.restore();
-                step(l);
-            }
-            requestAnimationFrame(draw);
-        }
-        draw();
-    })();
-
+        const lottieAnim = lottie.loadAnimation({
+    container: document.getElementById('lottieContainer'),
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    path: "{% static 'Walking_Creature.json' %}"
+});
     /* ── UPLOAD LOGIC ── */
     const input    = document.getElementById('audioInput');
     const box      = document.getElementById('uploadBox');
