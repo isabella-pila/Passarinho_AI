@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cantos da Mata — Identificador de Aves</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+<meta name="theme-color" content="#0d3320">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cantos da Mata">
+<link rel="apple-touch-icon" href="{% static 'icon-192.png' %}">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -681,7 +687,11 @@
     </div>
 
     <script>
-
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register("{% static 'sw.js' %}")
+        .then(() => console.log('SW registrado'))
+        .catch(err => console.error('SW erro:', err));
+}
 
         const lottieAnim = lottie.loadAnimation({
     container: document.getElementById('lottieContainer'),
