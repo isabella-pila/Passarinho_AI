@@ -419,91 +419,169 @@
                 }
 
         /* ── RESULTADO ── */
-        .resultado-section {
-            max-width: 520px;
-            margin: 0 auto 3rem;
-            padding: 0 1.5rem;
-        }
-        .resultado-card {
-            background: #fff;
-            border-radius: var(--card-radius);
-            overflow: hidden;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.22);
-            animation: slideUp 0.45s cubic-bezier(.22,.8,.4,1);
-        }
-        @keyframes slideUp {
-            from { opacity:0; transform:translateY(24px); }
-            to   { opacity:1; transform:translateY(0); }
-        }
-        .resultado-header {
-            background: linear-gradient(150deg, var(--forest) 0%, var(--mid) 100%);
-            padding: 2rem 2rem 2.25rem;
-            text-align: center;
-            position: relative;
-        }
-        .resultado-header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px; left: 0; right: 0;
-            height: 32px;
-            background: #fff;
-            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-        }
-        .resultado-imagem {
-            width: 110px; height: 110px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid rgba(255,255,255,0.22);
-            margin: 0 auto 1rem;
-            display: block;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-        .resultado-nome {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.9rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 0.25rem;
-        }
-        .resultado-cientifico {
-            font-style: italic;
-            color: var(--sage);
-            font-size: 0.9rem;
-        }
-        .resultado-body { padding: 2rem 2rem 1.75rem; }
-        .resultado-descricao {
-            color: var(--earth);
-            line-height: 1.75;
-            font-size: 0.92rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid #eee8dc;
-        }
+        /* ── RESULTADO ── */
+.resultado-section {
+    max-width: 520px;
+    margin: 0 auto 3rem;
+    padding: 0 1.5rem;
+}
+.resultado-card {
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 12px 50px rgba(0,0,0,0.35);
+    animation: slideUp 0.45s cubic-bezier(.22,.8,.4,1);
+}
+@keyframes slideUp {
+    from { opacity:0; transform:translateY(24px); }
+    to   { opacity:1; transform:translateY(0); }
+}
 
-     
-        /* ── DETALHES ── */
-        .detalhes {
-            margin-top: 1.5rem;
-            padding-top: 1.25rem;
-            border-top: 1px solid #eee8dc;
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 1rem;
-        }
-        .detalhe-item { text-align: center; }
-        .detalhe-label {
-            font-size: 0.68rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: #c0b8a8;
-            margin-bottom: 0.3rem;
-        }
-        .detalhe-valor {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--earth);
-        }
+/* ── HEADER DO RESULTADO ── */
+.resultado-header {
+    background: linear-gradient(160deg, #0a2a1a 0%, #1a5c38 60%, #22764a 100%);
+    padding: 2.5rem 2rem 4rem;
+    text-align: center;
+    position: relative;
+}
+.resultado-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(116,184,147,0.35);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 0.68rem;
+    color: var(--sage);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.4rem;
+}
+.resultado-badge-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #74b893;
+    animation: pulse 2s infinite;
+}
+.resultado-img-ring {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 1.25rem;
+}
+.resultado-img-ring::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    background: conic-gradient(
+        rgba(116,184,147,0.9) 0deg,
+        rgba(200,131,58,0.8) 120deg,
+        rgba(255,255,255,0.4) 240deg,
+        rgba(116,184,147,0.9) 360deg
+    );
+    animation: spinRing 8s linear infinite;
+}
+.resultado-imagem {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255,255,255,0.25);
+    display: block;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+.resultado-nome {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.3rem;
+    line-height: 1.1;
+}
+.resultado-cientifico {
+    font-style: italic;
+    color: rgba(116,184,147,0.85);
+    font-size: 0.92rem;
+    margin-bottom: 0;
+}
 
+/* ── WAVE DIVIDER ── */
+.resultado-wave {
+    display: block;
+    width: 100%;
+    margin-bottom: -2px;
+    background: linear-gradient(160deg, #0a2a1a 0%, #1a5c38 60%, #22764a 100%);
+}
+
+/* ── BODY ── */
+.resultado-body {
+    background: #fff;
+    padding: 1.75rem 1.75rem 1.5rem;
+}
+.resultado-descricao {
+    color: #4a5c4e;
+    line-height: 1.8;
+    font-size: 0.93rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ── DETALHES ── */
+.detalhes {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 0.75rem;
+    margin-bottom: 0;
+}
+.detalhe-item {
+    background: #f4f8f5;
+    border: 1px solid #e0ede6;
+    border-radius: 14px;
+    padding: 0.85rem 0.5rem;
+    text-align: center;
+}
+.detalhe-label {
+    font-size: 0.63rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #94b8a0;
+    margin-bottom: 0.35rem;
+}
+.detalhe-valor {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1a5c38;
+    word-break: break-word;
+}
+
+/* ── BTN NOVO ── */
+.btn-novo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.85rem;
+    background: transparent;
+    color: rgba(255,255,255,0.7);
+    border: 1.5px solid rgba(116,184,147,0.32);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.25s;
+}
+.btn-novo:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(116,184,147,0.6);
+    color: #fff;
+}
         /* ── BTN NOVO ── */
         .btn-novo {
             display: flex;
@@ -813,41 +891,45 @@
     {% endif %}
 
     {% if resultado %}
-    <div class="resultado-section">
-        <div class="resultado-card">
-            <div class="resultado-header">
-                <img class="resultado-imagem" src="{% static resultado.imagem %}" alt="{{ resultado.nome_display }}">
-                <div class="resultado-nome">{{ resultado.nome_display }}</div>
-                <div class="resultado-cientifico">{{ resultado.nome_cientifico }}</div>
+<div class="resultado-section">
+    <div class="resultado-card">
+        <div class="resultado-header">
+            <div class="resultado-badge">
+                <span class="resultado-badge-dot"></span>
+                Espécie identificada
             </div>
-            <div class="resultado-body">
-                <div class="resultado-descricao">
-                    {{ resultado.descricao }}
+            <div class="resultado-img-ring">
+                <img class="resultado-imagem" src="{% static resultado.imagem %}" alt="{{ resultado.nome_display }}">
+            </div>
+            <div class="resultado-nome">{{ resultado.nome_display }}</div>
+            <div class="resultado-cientifico">{{ resultado.nome_cientifico }}</div>
+        </div>
+
+        <svg class="resultado-wave" viewBox="0 0 520 40" preserveAspectRatio="none" height="40">
+            <path d="M0,0 C130,40 390,40 520,0 L520,40 L0,40 Z" fill="#fff"/>
+        </svg>
+
+        <div class="resultado-body">
+            <div class="resultado-descricao">{{ resultado.descricao }}</div>
+            <div class="detalhes">
+                <div class="detalhe-item">
+                    <div class="detalhe-label">Arquivo</div>
+                    <div class="detalhe-valor">{{ resultado.arquivo }}</div>
                 </div>
-
-              
-    
-
-                <div class="detalhes">
-                    <div class="detalhe-item">
-                        <div class="detalhe-label">Arquivo</div>
-                        <div class="detalhe-valor">{{ resultado.arquivo }}</div>
-                    </div>
-                    <div class="detalhe-item">
-                        <div class="detalhe-label">Duração</div>
-                        <div class="detalhe-valor">{{ resultado.duracao }}s</div>
-                    </div>
-                    <div class="detalhe-item">
-                        <div class="detalhe-label">Neurônio BMU</div>
-                        <div class="detalhe-valor">{{ resultado.neuronio }}</div>
-                    </div>
+                <div class="detalhe-item">
+                    <div class="detalhe-label">Duração</div>
+                    <div class="detalhe-valor">{{ resultado.duracao }}s</div>
+                </div>
+                <div class="detalhe-item">
+                    <div class="detalhe-label">Neurônio BMU</div>
+                    <div class="detalhe-valor">{{ resultado.neuronio }}</div>
                 </div>
             </div>
         </div>
-
-        <a href="/" class="btn-novo">🎵 Testar outro canto</a>
     </div>
-    {% endif %}
+    <a href="/" class="btn-novo">🎵 Testar outro canto</a>
+</div>
+{% endif %}
 
     <div class="install-banner hidden" id="installBanner">
         <div class="install-icon">🌿</div>
