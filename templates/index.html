@@ -531,6 +531,81 @@
             color: #fff;
         }
 
+        /* ── TABS DE ÁUDIO ── */
+        .audio-tabs {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 1.1rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(116,184,147,0.18);
+            border-radius: 12px;
+            padding: 4px;
+        }
+        .audio-tab {
+            flex: 1;
+            padding: 0.55rem 0.5rem;
+            background: transparent;
+            border: none;
+            border-radius: 9px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: rgba(208,234,216,0.55);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .audio-tab.active {
+            background: rgba(255,255,255,0.13);
+            color: #fff;
+        }
+        .audio-tab:hover:not(.active) { color: rgba(208,234,216,0.9); }
+
+        /* ── GRAVAÇÃO ── */
+        .record-box {
+            background: rgba(255,255,255,0.93);
+            border-radius: var(--card-radius);
+            padding: 2.5rem 2rem;
+            text-align: center;
+        }
+        .mic-ring {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            margin: 0 auto 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--mint);
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .mic-ring.recording {
+            background: #fde8e3;
+            animation: micPulse 1.2s ease-in-out infinite;
+        }
+        @keyframes micPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(196,97,74,0.45); }
+            50%      { box-shadow: 0 0 0 16px rgba(196,97,74,0); }
+        }
+        .mic-icon { font-size: 2.1rem; line-height: 1; transition: transform 0.2s; }
+        .mic-ring:hover .mic-icon { transform: scale(1.1); }
+        .record-status {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--forest);
+            margin-bottom: 0.2rem;
+        }
+        .record-timer {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--earth);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.04em;
+            min-height: 2.2rem;
+        }
+        .record-hint { font-size: 0.78rem; color: #aaa; margin-top: 0.35rem; }
+        .audio-preview { width: 100%; margin-top: 1.1rem; border-radius: 8px; outline: none; }
+
         /* ── ERRO ── */
         .erro-box {
             max-width: 520px;
@@ -613,28 +688,57 @@
             <span class="divisor-text">Enviar áudio</span>
             <div class="divisor-line"></div>
         </div>
-        <form method="POST" enctype="multipart/form-data" id="uploadForm">
-            {% csrf_token %}
-            <div class="upload-box" id="uploadBox" onclick="document.getElementById('audioInput').click()">
-                <div class="upload-icon-wrap">🎵</div>
-                <div class="upload-title">Arraste o áudio aqui</div>
-                <div class="upload-hint">ou clique para selecionar do dispositivo</div>
-                <div class="upload-formats">
-                    <span class="format-pill">MP3</span>
-                    <span class="format-pill">WAV</span>
-                </div>
-                <div class="file-name" id="fileName"></div>
-                <input type="file" name="audio" id="audioInput" accept=".mp3,.wav">
-            </div>
-            <button type="submit" class="btn-identificar" id="btnIdentificar" disabled>
-                🔍 Identificar espécie
-            </button>
-        </form>
 
-<div class="loading" id="loading">
-    <div class="loading-lottie" id="lottieContainer"></div>
-    <div class="loading-text">Analisando o canto<span class="loading-dots"></span></div>
-</div>
+        <div class="audio-tabs">
+            <button class="audio-tab active" id="tabUpload" type="button">📁 Arquivo</button>
+            <button class="audio-tab" id="tabGravar" type="button">🎙️ Gravar ao vivo</button>
+        </div>
+
+        <!-- Painel: Upload de arquivo -->
+        <div id="panelUpload">
+            <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                {% csrf_token %}
+                <div class="upload-box" id="uploadBox" onclick="document.getElementById('audioInput').click()">
+                    <div class="upload-icon-wrap">🎵</div>
+                    <div class="upload-title">Arraste o áudio aqui</div>
+                    <div class="upload-hint">ou clique para selecionar do dispositivo</div>
+                    <div class="upload-formats">
+                        <span class="format-pill">MP3</span>
+                        <span class="format-pill">WAV</span>
+                    </div>
+                    <div class="file-name" id="fileName"></div>
+                    <input type="file" name="audio" id="audioInput" accept=".mp3,.wav">
+                </div>
+                <button type="submit" class="btn-identificar" id="btnIdentificar" disabled>
+                    🔍 Identificar espécie
+                </button>
+            </form>
+        </div>
+
+        <!-- Painel: Gravação ao vivo -->
+        <div id="panelGravar" style="display:none">
+            <form method="POST" enctype="multipart/form-data" id="recordForm">
+                {% csrf_token %}
+                <input type="file" name="audio" id="audioRecorded" style="display:none" accept=".wav">
+                <div class="record-box">
+                    <div class="mic-ring" id="micRing">
+                        <span class="mic-icon">🎙️</span>
+                    </div>
+                    <div class="record-status" id="recordStatus">Clique para gravar</div>
+                    <div class="record-timer" id="recordTimer"></div>
+                    <div class="record-hint" id="recordHint">O microfone será solicitado ao clicar</div>
+                    <audio class="audio-preview" id="audioPreview" controls style="display:none"></audio>
+                </div>
+                <button type="submit" class="btn-identificar" id="btnIdentificarGrav" disabled>
+                    🔍 Identificar espécie
+                </button>
+            </form>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="loading-lottie" id="lottieContainer"></div>
+            <div class="loading-text">Analisando o canto<span class="loading-dots"></span></div>
+        </div>
     </div>
     {% endif %}
 
@@ -693,49 +797,181 @@ if ('serviceWorker' in navigator) {
         .catch(err => console.error('SW erro:', err));
 }
 
-        const lottieAnim = lottie.loadAnimation({
+const lottieAnim = lottie.loadAnimation({
     container: document.getElementById('lottieContainer'),
     renderer: 'svg',
     loop: true,
     autoplay: true,
     path: "{% static 'Walking_Creature.json' %}"
 });
-    /* ── UPLOAD LOGIC ── */
-    const input    = document.getElementById('audioInput');
-    const box      = document.getElementById('uploadBox');
-    const btn      = document.getElementById('btnIdentificar');
-    const fileName = document.getElementById('fileName');
-    const form     = document.getElementById('uploadForm');
-    const loading  = document.getElementById('loading');
 
-    if (input) {
-        input.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                box.classList.add('has-file');
-                fileName.textContent = '🎵 ' + this.files[0].name;
-                btn.disabled = false;
-            }
-        });
+const loading = document.getElementById('loading');
 
-        box.addEventListener('dragover', e => { e.preventDefault(); box.classList.add('dragover'); });
-        box.addEventListener('dragleave', () => box.classList.remove('dragover'));
-        box.addEventListener('drop', e => {
-            e.preventDefault();
-            box.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                input.files = e.dataTransfer.files;
-                box.classList.add('has-file');
-                fileName.textContent = '🎵 ' + e.dataTransfer.files[0].name;
-                btn.disabled = false;
-            }
-        });
+/* ── UPLOAD DE ARQUIVO ── */
+const input    = document.getElementById('audioInput');
+const box      = document.getElementById('uploadBox');
+const btn      = document.getElementById('btnIdentificar');
+const fileName = document.getElementById('fileName');
+const form     = document.getElementById('uploadForm');
 
-        form.addEventListener('submit', function() {
-            btn.style.display = 'none';
-            box.style.display = 'none';
-            loading.classList.add('active');
-        });
+if (input) {
+    input.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            box.classList.add('has-file');
+            fileName.textContent = '🎵 ' + this.files[0].name;
+            btn.disabled = false;
+        }
+    });
+    box.addEventListener('dragover', e => { e.preventDefault(); box.classList.add('dragover'); });
+    box.addEventListener('dragleave', () => box.classList.remove('dragover'));
+    box.addEventListener('drop', e => {
+        e.preventDefault();
+        box.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) {
+            input.files = e.dataTransfer.files;
+            box.classList.add('has-file');
+            fileName.textContent = '🎵 ' + e.dataTransfer.files[0].name;
+            btn.disabled = false;
+        }
+    });
+    form.addEventListener('submit', () => {
+        btn.style.display = 'none';
+        box.style.display = 'none';
+        loading.classList.add('active');
+    });
+}
+
+/* ── TABS ── */
+const tabUpload  = document.getElementById('tabUpload');
+const tabGravar  = document.getElementById('tabGravar');
+const panelUpload = document.getElementById('panelUpload');
+const panelGravar = document.getElementById('panelGravar');
+
+if (tabUpload) {
+    tabUpload.addEventListener('click', () => {
+        tabUpload.classList.add('active');
+        tabGravar.classList.remove('active');
+        panelUpload.style.display = '';
+        panelGravar.style.display = 'none';
+        if (isRecording) stopAndFinish();
+    });
+    tabGravar.addEventListener('click', () => {
+        tabGravar.classList.add('active');
+        tabUpload.classList.remove('active');
+        panelGravar.style.display = '';
+        panelUpload.style.display = 'none';
+    });
+}
+
+/* ── GRAVAÇÃO (WAV via Web Audio API) ── */
+let mediaStream, audioCtx, source, processor, allSamples;
+let isRecording = false;
+let timerInterval = null;
+let elapsed = 0;
+
+const micRing      = document.getElementById('micRing');
+const recordStatus = document.getElementById('recordStatus');
+const recordTimer  = document.getElementById('recordTimer');
+const recordHint   = document.getElementById('recordHint');
+const audioPreview = document.getElementById('audioPreview');
+const audioRecorded = document.getElementById('audioRecorded');
+const btnGrav      = document.getElementById('btnIdentificarGrav');
+const recordForm   = document.getElementById('recordForm');
+
+function fmtTime(s) {
+    return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+
+function encodeWAV(samples, sr) {
+    const buf = new ArrayBuffer(44 + samples.length * 2);
+    const v   = new DataView(buf);
+    const ws  = (off, s) => { for (let i = 0; i < s.length; i++) v.setUint8(off + i, s.charCodeAt(i)); };
+    ws(0, 'RIFF'); v.setUint32(4, 36 + samples.length * 2, true);
+    ws(8, 'WAVE'); ws(12, 'fmt '); v.setUint32(16, 16, true);
+    v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+    v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true);
+    v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+    ws(36, 'data'); v.setUint32(40, samples.length * 2, true);
+    let off = 44;
+    for (let i = 0; i < samples.length; i++, off += 2) {
+        const s = Math.max(-1, Math.min(1, samples[i]));
+        v.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
     }
+    return buf;
+}
+
+function stopAndFinish() {
+    isRecording = false;
+    clearInterval(timerInterval);
+    if (processor) { processor.disconnect(); processor = null; }
+    if (source)    { source.disconnect(); source = null; }
+    if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); }
+
+    const sr = audioCtx ? audioCtx.sampleRate : 22050;
+    if (audioCtx) { audioCtx.close(); audioCtx = null; }
+
+    if (!allSamples || allSamples.length === 0) return;
+
+    const wavBuf = encodeWAV(allSamples, sr);
+    const blob   = new Blob([wavBuf], { type: 'audio/wav' });
+    const file   = new File([blob], 'gravacao.wav', { type: 'audio/wav' });
+    const dt     = new DataTransfer();
+    dt.items.add(file);
+    audioRecorded.files = dt.files;
+
+    audioPreview.src = URL.createObjectURL(blob);
+    audioPreview.style.display = 'block';
+
+    micRing.classList.remove('recording');
+    micRing.querySelector('.mic-icon').textContent = '🎙️';
+    recordStatus.textContent = 'Gravação concluída (' + fmtTime(elapsed) + ')';
+    recordHint.textContent   = 'Clique no microfone para gravar novamente';
+    btnGrav.disabled = false;
+}
+
+if (micRing) {
+    micRing.addEventListener('click', async () => {
+        if (isRecording) {
+            stopAndFinish();
+            return;
+        }
+        try {
+            mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+            audioCtx    = new (window.AudioContext || window.webkitAudioContext)();
+            source      = audioCtx.createMediaStreamSource(mediaStream);
+            processor   = audioCtx.createScriptProcessor(4096, 1, 1);
+            allSamples  = [];
+            isRecording = true;
+
+            processor.onaudioprocess = e => {
+                if (isRecording) allSamples.push(...e.inputBuffer.getChannelData(0));
+            };
+            source.connect(processor);
+            processor.connect(audioCtx.destination);
+
+            micRing.classList.add('recording');
+            micRing.querySelector('.mic-icon').textContent = '⏹️';
+            recordStatus.textContent  = 'Gravando...';
+            recordHint.textContent    = 'Clique para parar';
+            audioPreview.style.display = 'none';
+            btnGrav.disabled = true;
+            elapsed = 0;
+            recordTimer.textContent = fmtTime(0);
+            timerInterval = setInterval(() => { elapsed++; recordTimer.textContent = fmtTime(elapsed); }, 1000);
+        } catch (err) {
+            recordStatus.textContent = 'Erro ao acessar microfone';
+            recordHint.textContent   = err.message;
+        }
+    });
+}
+
+if (recordForm) {
+    recordForm.addEventListener('submit', () => {
+        btnGrav.style.display = 'none';
+        document.querySelector('#panelGravar .record-box').style.display = 'none';
+        loading.classList.add('active');
+    });
+}
     </script>
 </body>
 </html>
