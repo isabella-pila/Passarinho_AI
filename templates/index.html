@@ -618,6 +618,70 @@
             font-size: 0.88rem;
         }
 
+        /* ── INSTALL BANNER ── */
+        .install-banner {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 3rem);
+            max-width: 480px;
+            background: rgba(13, 51, 32, 0.97);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(116,184,147,0.35);
+            border-radius: 18px;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.55);
+            z-index: 100;
+            animation: slideUp 0.4s cubic-bezier(.22,.8,.4,1);
+        }
+        .install-banner.hidden { display: none !important; }
+        .install-icon {
+            font-size: 2.2rem;
+            flex-shrink: 0;
+        }
+        .install-texts { flex: 1; }
+        .install-title {
+            font-weight: 600;
+            color: #fff;
+            font-size: 0.95rem;
+            margin-bottom: 0.2rem;
+        }
+        .install-subtitle {
+            font-size: 0.78rem;
+            color: rgba(208,234,216,0.6);
+        }
+        .install-actions { display: flex; flex-direction: column; gap: 0.4rem; flex-shrink: 0; }
+        .btn-install {
+            padding: 0.5rem 1.1rem;
+            background: var(--sage);
+            color: var(--forest);
+            border: none;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: filter 0.2s;
+        }
+        .btn-install:hover { filter: brightness(1.1); }
+        .btn-install-dismiss {
+            padding: 0.4rem;
+            background: transparent;
+            color: rgba(208,234,216,0.45);
+            border: none;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-install-dismiss:hover { color: rgba(208,234,216,0.8); }
+
         /* ── FOOTER ── */
         .footer {
             text-align: center;
@@ -785,6 +849,18 @@
     </div>
     {% endif %}
 
+    <div class="install-banner hidden" id="installBanner">
+        <div class="install-icon">🌿</div>
+        <div class="install-texts">
+            <div class="install-title">Instalar Cantos da Mata</div>
+            <div class="install-subtitle">Acesse offline, direto da tela inicial</div>
+        </div>
+        <div class="install-actions">
+            <button class="btn-install" id="btnInstall">Instalar</button>
+            <button class="btn-install-dismiss" id="btnDismiss">Agora não</button>
+        </div>
+    </div>
+
     <div class="footer">
         Cantos da Mata — Bioacústica com Mapa Auto-Organizável de Kohonen<br>
         Dados: <a href="https://xeno-canto.org" target="_blank">Xeno-canto</a> · Espécies da Mata Atlântica
@@ -796,6 +872,42 @@ if ('serviceWorker' in navigator) {
         .then(() => console.log('SW registrado'))
         .catch(err => console.error('SW erro:', err));
 }
+
+/* ── INSTALL BANNER ── */
+let deferredPrompt = null;
+const installBanner = document.getElementById('installBanner');
+const btnInstall    = document.getElementById('btnInstall');
+const btnDismiss    = document.getElementById('btnDismiss');
+
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    if (localStorage.getItem('pwa-dismissed')) return;
+    deferredPrompt = e;
+    installBanner.classList.remove('hidden');
+});
+
+if (btnInstall) {
+    btnInstall.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') localStorage.setItem('pwa-dismissed', '1');
+        deferredPrompt = null;
+        installBanner.classList.add('hidden');
+    });
+}
+
+if (btnDismiss) {
+    btnDismiss.addEventListener('click', () => {
+        localStorage.setItem('pwa-dismissed', '1');
+        installBanner.classList.add('hidden');
+    });
+}
+
+window.addEventListener('appinstalled', () => {
+    localStorage.setItem('pwa-dismissed', '1');
+    installBanner.classList.add('hidden');
+});
 
 const lottieAnim = lottie.loadAnimation({
     container: document.getElementById('lottieContainer'),
