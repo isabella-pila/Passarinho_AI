@@ -1,0 +1,29 @@
+EXPERIMENTO COMPARATIVO: 26 vs 58 FEATURES
+======================================================================
+
+Configuração da rede SOM:
+  Grade: 5x5
+  Épocas: 10000
+  Split treino/teste: 70/30
+  Sementes testadas: [42, 123, 456, 789, 1000]
+
+Resultados por semente:
+  Semente         26 feat      58 feat
+  ------------------------------------
+  42               68.75%       79.17%
+  123              70.83%       75.00%
+  456              50.00%       66.67%
+  789              72.92%       64.58%
+  1000             62.50%       72.92%
+
+Estatísticas:
+  Métrica              26 feat      58 feat
+  -----------------------------------------
+  media                 65.00%       71.67%
+  desvio                 8.27%        5.37%
+  min                   50.00%       64.58%
+  max                   72.92%       79.17%
+  mediana               68.75%       72.92%
+
+Diferença média (58 - 26): +6.67pp
+Interpretação: 58 features é MELHOR (+6.7pp)
